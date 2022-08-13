@@ -163,12 +163,21 @@
                 font-size: 3vmin;
                 width: 20%;
             }
+            .delbutton {
+                padding: 1vmin;
+                margin: 1vmin;
+                float: right;
+                background-color: red;
+                color: white;
+            }
         </style>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
         <script>
             class user{
-                assignments = [];
-                notifications = [];
+                constructor(){
+                    this.assignments = [];
+                    this.notifications = [];
+                }
             }
 
             class assignment{
@@ -178,11 +187,12 @@
                     this.due = due;
                 }
 
-                gethtml(){
+                gethtml(n){
                     return `
                     <button type="button" class="collapsible">${this.name}<span class="clearfix" style="float: right;">${this.due.toString()}</span></button>
                     <div class="content">
                         <p>${this.description}</p>
+                        <button class="button delbutton" onclick="delassignment(${n});">Delete Assignment</button>
                     </div>
                     `
                 }
@@ -239,8 +249,25 @@
 
             function addassignment(){
                 nassignment = new assignment(document.getElementById("titlein").value, document.getElementById("descin").value, new Date(document.getElementById("duein").value));
-                document.getElementById("assignments").innerHTML += nassignment.gethtml();
-                curuser.assignments += nassignment;
+                document.getElementById("assignments").innerHTML += nassignment.gethtml(curuser.assignments.length);
+                curuser.assignments.push(nassignment);
+                var namodal = document.getElementById("namodal");
+                namodal.style.display = "none";
+                drawassignments();
+            }
+
+            function delassignment(n){
+                curuser.assignments.pop(n);
+                drawassignments();
+            }
+
+            function drawassignments(){
+                document.getElementById("assignments").innerHTML = "";
+                for(var i = 0; i<curuser.assignments.length; i++){
+                    var assign = curuser.assignments[i];
+                    document.getElementById("assignments").innerHTML += assign.gethtml(i);
+                }
+
                 var coll = document.getElementsByClassName("collapsible");
                 for (var i = 0; i < coll.length; i++) {
                     coll[i].addEventListener("click", function() {
@@ -253,8 +280,6 @@
                         }
                     });
                 }
-                var namodal = document.getElementById("namodal");
-                namodal.style.display = "none";
             }
 
             function load(){ 
