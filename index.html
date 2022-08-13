@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>HomeWorker</title>
+        <style>
+            * {
+                font-family: sans-serif;
+            }
+            .topnav {
+                overflow: hidden;
+                background-color: #333;
+                position: relative;
+            }
+              
+            .topnav #links {
+                display: none;
+            }
+              
+            .topnav a {
+                color: #ddd;
+                padding: 14px 16px;
+                text-decoration: none;
+                font-size: xx-large;
+                display: block;
+            }
+            .topnav a.icon {
+                background: #333;
+                display: block;
+                position: absolute;
+                right: 0;
+                top: 0;
+            }
+            .topnav a:hover {
+                background-color: #ddd;
+                color: #333;
+            }
+              
+            .active {
+                background-color: #333;
+                color: #ddd;
+            }
+
+            .badge {
+                background-color: red;
+                color: #ddd;
+                padding: 2px;
+                text-align: center;
+                border-radius: 5px;
+            }
+            .collapsible {
+                background-color: #777;
+                color: white;
+                cursor: pointer;
+                padding: 18px;
+                width: 100%;
+                border: none;
+                text-align: left;
+                outline: none;
+                font-size: 15px;
+            }
+            .addbut {
+                background-color: #777;
+                color: white;
+                cursor: pointer;
+                padding: 18px;
+                width: 100%;
+                border: none;
+                text-align: left;
+                outline: none;
+                font-size: 15px;
+            }
+              
+            .active, .collapsible:hover, .addbut:hover {
+                background-color: #555;
+            } 
+            .content {
+                padding: 0 18px;
+                display: none;
+                overflow: hidden;
+                background-color: #f1f1f1;
+            }
+            .header {
+                font-size: x-large;
+                padding: 2vmin;
+                width: 100%;
+            }
+            .modal {
+                display: none;
+                position: fixed;
+                z-index: 1;
+                background-color: #ddd;
+                color: #333;
+                padding-top: 100px;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                overflow: auto;
+                background-color: rgb(0, 0, 0);
+                background-color: rgba(0, 0, 0, 0.4);
+            }
+            .modal-content {
+                background-color: #fefefe;
+                margin: auto;
+                padding: 20px;
+                border: 1px solid #888;
+                width: 80%;
+            }
+            .close {
+                color: #aaaaaa;
+                float: right;
+                font-size: 28px;
+                font-weight: bold;
+            }
+            .close:hover,
+            .close:focus {
+                color: #000;
+                text-decoration: none;
+                cursor: pointer;
+            }
+            input, textarea {
+                width: 100%;
+            }
+            .title{
+                font-size: x-large;
+            }
+            .clearfix {
+                overflow: auto;
+            }
+            .button {
+                background-color: #333;
+                color: #ddd;
+                border-radius: 1vmin;
+                padding: 3vmin;
+            }
+            .notif {
+                padding: 4vmin;
+                background-color: #f00; /* Red */
+                color: white;
+                border-radius: 2vmin;
+                margin-bottom: 3vmin;
+            }
+            .closenotif {
+                margin-left: 3vmin;
+                color: white;
+                font-weight: bold;
+                float: right;
+                font-size: 4vmin;
+                line-height: 4vmin;
+                cursor: pointer;
+                transition: 0.3s;
+            }
+            .closenotif:hover {
+                color: black;
+            }
+            #search {
+                font-size: 3vmin;
+                height: 4vmin;
+                width: 75%;
+            }
+            #searchbut {
+                padding: .5vmin;
+                font-size: 3vmin;
+                width: 20%;
+            }
+        </style>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        <script>
+            class user{
+                assignments = [];
+                notifications = [];
+            }
+
+            class assignment{
+                constructor(name, description, due){
+                    this.name = name;
+                    this.description = description;
+                    this.due = due;
+                }
+
+                gethtml(){
+                    return `
+                    <button type="button" class="collapsible">${this.name}<span class="clearfix" style="float: right;">${this.due.toString()}</span></button>
+                    <div class="content">
+                        <p>${this.description}</p>
+                    </div>
+                    `
+                }
+            }
+
+            class notification{
+                constructor(data, actions){
+                    this.data = data;
+                    this.actions = actions;
+                }
+            }
+
+            class action{
+                constructor(title, func, thiss, args){
+                    this.title = title;
+                    this.func = func;
+                    this.thiss = thiss;
+                    this.args = args;
+                }
+
+                run(){
+                    this.func.apply(this.thiss, this.args);
+                }
+            }
+
+            function showassign(){
+                document.getElementById("searchcont").style.display = "none";
+                document.getElementById("notifcont").style.display = "none";
+                document.getElementById("assignmentcont").style.display = "block";
+                toggleLinks();
+            }
+
+            function shownotif(){
+                document.getElementById("searchcont").style.display = "none";
+                document.getElementById("assignmentcont").style.display = "none";
+                document.getElementById("notifcont").style.display = "block";
+                toggleLinks();
+            }
+
+            function showsearch(){
+                document.getElementById("notifcont").style.display = "none";
+                document.getElementById("assignmentcont").style.display = "none";
+                document.getElementById("searchcont").style.display = "block";
+                toggleLinks();
+            }
+
+            function toggleLinks(){
+                if(document.getElementById("links").style.display == "block"){
+                    document.getElementById("links").style.display = "none";
+                }else{
+                    document.getElementById("links").style.display = "block";
+                }
+            }
+
+            function addassignment(){
+                nassignment = new assignment(document.getElementById("titlein").value, document.getElementById("descin").value, new Date(document.getElementById("duein").value));
+                document.getElementById("assignments").innerHTML += nassignment.gethtml();
+                curuser.assignments += nassignment;
+                var coll = document.getElementsByClassName("collapsible");
+                for (var i = 0; i < coll.length; i++) {
+                    coll[i].addEventListener("click", function() {
+                        this.classList.toggle("active");
+                        var content = this.nextElementSibling;
+                        if (content.style.display === "block") {
+                            content.style.display = "none";
+                        } else {
+                            content.style.display = "block";
+                        }
+                    });
+                }
+                var namodal = document.getElementById("namodal");
+                namodal.style.display = "none";
+            }
+
+            function load(){ 
+                var namodal = document.getElementById("namodal");
+                var naspan = document.getElementsByClassName("close")[0];
+                naspan.onclick = function () {
+                    namodal.style.display = "none";
+                }
+                window.onclick = function (event) {
+                    if (event.target == namodal) {
+                        namodal.style.display = "none";
+                    }
+                }
+
+                var coll = document.getElementsByClassName("collapsible");
+                for (var i = 0; i < coll.length; i++) {
+                    coll[i].addEventListener("click", function() {
+                        this.classList.toggle("active");
+                        var content = this.nextElementSibling;
+                        if (content.style.display === "block") {
+                            content.style.display = "none";
+                        } else {
+                            content.style.display = "block";
+                        }
+                    });
+                }
+
+                curuser = new user();
+
+                showassign();
+                toggleLinks();
+            }
+        </script>
+    </head>
+    <body>
+        <div class="topnav">
+        <a onclick="showassign();" class="active">HomeWorker</a>
+        <div id="links">
+            <a onclick="showassign();"><i class="fa fa-file-text"></i> Assignments</a>
+            <a onclick=""><i class="fa fa-clock-o"></i> Due Soon</a>
+            <a onclick="shownotif();"><i class="fa fa-bell"></i> Notifications <span class="badge" id="notenum">10</span></a>
+            <a onclick="showsearch();"><i class="fa fa-search"></i> Search</a>
+        </div>
+        <a class="icon" onclick="toggleLinks();">
+            <i class="fa fa-bars"></i>
+        </a>
+        </div>
+        <div id="assignmentcont">
+            <div class="header">
+                <span>My Assignments:</span>
+            </div>
+            <div id="assignments">
+
+            </div>
+            <button class="addbut" onclick="document.getElementById('namodal').style.display='block';
+                                            var now = new Date();
+                                            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+                                            document.getElementById('duein').value = now.toISOString().slice(0,16);
+            ">Add Assignment</button>
+        </div>
+        <div id="notifcont">
+            <br>
+            <br>
+            <div class="notif">
+                <span class="closenotif" onclick="this.parentElement.style.display='none';">&times;</span>
+                This is a notification.
+            </div> 
+            <div class="notif">
+                <span class="closenotif" onclick="this.parentElement.style.display='none';">&times;</span>
+                This is a notification.
+            </div> 
+            <div class="notif">
+                <span class="closenotif" onclick="this.parentElement.style.display='none';">&times;</span>
+                This is a notification.
+            </div> 
+            <div class="notif">
+                <span class="closenotif" onclick="this.parentElement.style.display='none';">&times;</span>
+                This is a notification.
+            </div> 
+            <div class="notif">
+                <span class="closenotif" onclick="this.parentElement.style.display='none';">&times;</span>
+                This is a notification.
+            </div> 
+            <div class="notif">
+                <span class="closenotif" onclick="this.parentElement.style.display='none';">&times;</span>
+                This is a notification.
+            </div> 
+        </div>
+        <div id="searchcont">
+            <div id="searchbar">
+                <br>
+                <input type="text" placeholder="Search..." id="search">
+                <button id="searchbut"><i class="fa fa-search"></i></button>
+                <br>
+                <br>
+                <button type="button" class="collapsible">Filters</button>
+                <div class="content">
+                    <h1>Filters...</h1>
+                </div>
+            </div>
+        </div>
+        <div id="namodal" class="modal">
+            <div class="modal-content clearfix">
+                <span class="title">Add Assignment:</span>
+                <span class="close">&times;</span>
+                <br>
+                <br>
+                <form>
+                    <span>Title:</span>
+                    <br>
+                    <input id="titlein" type="text" placeholder="Title...">
+                    <br>
+                    <br>
+                    <span>Description:</span>
+                    <br>
+                    <textarea id="descin" placeholder="Description..."></textarea>
+                    <br>
+                    <br>
+                    <span>Due:</span>
+                    <br>
+                    <input id="duein" type="datetime-local">
+                </form>
+                <button onclick="addassignment();" class="button" style="float: right; margin-top: 1vmin;">Add</button>
+            </div>
+        </div>
+        <script>load();</script>
+    </body>
+</html>
