@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <meta charset="utf-8"> <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
         <title>HomeWorker</title>
         <style>
             * {
@@ -203,18 +205,20 @@
                     this.data = data;
                     this.actions = actions;
                 }
-            }
 
-            class action{
-                constructor(title, func, thiss, args){
-                    this.title = title;
-                    this.func = func;
-                    this.thiss = thiss;
-                    this.args = args;
-                }
-
-                run(){
-                    this.func.apply(this.thiss, this.args);
+                gethtml(n){
+                    var acthtml;
+                    for(var act of this.actions){
+                        acthtml += `<span>[<a style="color: blue; text-decoration: underline; cursor: pointer;" onclick='${act[1]}'>${act[0]}</a>]</span>`
+                        return `
+                            <div class="notif">
+                                <span class="closenotif" onclick="delnotif(${n});">&times;</span>
+                                ${this.data}
+                                <br>
+                                ${acthtml}                            
+                            </div>
+                        `
+                    }
                 }
             }
 
@@ -256,8 +260,33 @@
                 drawassignments();
             }
 
+            function addassignobj(aobj){
+                var nobj = JSON.parse(unescape(aobj))
+                var nassign = new assignment(nobj.name, nobj.description, nobj.due);
+                curuser.assignments.push(nassign);
+                drawassignments();
+            }
+
+            function drawnotifs(){
+                document.getElementById("notifs").innerHTML = "";
+                for(var i = 0; i<curuser.notifications.length; i++){
+                    var notif = curuser.notifications[i];
+                    document.getElementById("notifs").innerHTML += notif.gethtml(i);
+                }
+                document.getElementById("notenum").innerHTML = curuser.notifications.length;
+            }
+
+            function delnotif(n){
+                curuser.notifications.pop(n);
+                drawnotifs();
+            }
+
             function delassignment(n){
-                curuser.assignments.pop(n);
+                var del = curuser.assignments.pop(n);
+                console.log();
+                var note = new notification(`Assignment "${del.name}" deleted.`, [["Undo", `addassignobj("${escape(JSON.stringify(del))}");`]]);
+                curuser.notifications.push(note);
+                drawnotifs();
                 drawassignments();
             }
 
@@ -320,7 +349,7 @@
         <div id="links">
             <a onclick="showassign();"><i class="fa fa-file-text"></i> Assignments</a>
             <a onclick=""><i class="fa fa-clock-o"></i> Due Soon</a>
-            <a onclick="shownotif();"><i class="fa fa-bell"></i> Notifications <span class="badge" id="notenum">10</span></a>
+            <a onclick="shownotif();"><i class="fa fa-bell"></i> Notifications <span class="badge" id="notenum">0</span></a>
             <a onclick="showsearch();"><i class="fa fa-search"></i> Search</a>
         </div>
         <a class="icon" onclick="toggleLinks();">
@@ -343,30 +372,32 @@
         <div id="notifcont">
             <br>
             <br>
-            <div class="notif">
-                <span class="closenotif" onclick="this.parentElement.style.display='none';">&times;</span>
-                This is a notification.
-            </div> 
-            <div class="notif">
-                <span class="closenotif" onclick="this.parentElement.style.display='none';">&times;</span>
-                This is a notification.
-            </div> 
-            <div class="notif">
-                <span class="closenotif" onclick="this.parentElement.style.display='none';">&times;</span>
-                This is a notification.
-            </div> 
-            <div class="notif">
-                <span class="closenotif" onclick="this.parentElement.style.display='none';">&times;</span>
-                This is a notification.
-            </div> 
-            <div class="notif">
-                <span class="closenotif" onclick="this.parentElement.style.display='none';">&times;</span>
-                This is a notification.
-            </div> 
-            <div class="notif">
-                <span class="closenotif" onclick="this.parentElement.style.display='none';">&times;</span>
-                This is a notification.
-            </div> 
+            <div id="notifs">
+                <div class="notif">
+                    <span class="closenotif" onclick="this.parentElement.style.display='none';">&times;</span>
+                    This is a notification.
+                </div> 
+                <div class="notif">
+                    <span class="closenotif" onclick="this.parentElement.style.display='none';">&times;</span>
+                    This is a notification.
+                </div> 
+                <div class="notif">
+                    <span class="closenotif" onclick="this.parentElement.style.display='none';">&times;</span>
+                    This is a notification.
+                </div> 
+                <div class="notif">
+                    <span class="closenotif" onclick="this.parentElement.style.display='none';">&times;</span>
+                    This is a notification.
+                </div> 
+                <div class="notif">
+                    <span class="closenotif" onclick="this.parentElement.style.display='none';">&times;</span>
+                    This is a notification.
+                </div> 
+                <div class="notif">
+                    <span class="closenotif" onclick="this.parentElement.style.display='none';">&times;</span>
+                    This is a notification.
+                </div> 
+            </div>
         </div>
         <div id="searchcont">
             <div id="searchbar">
