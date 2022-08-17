@@ -172,6 +172,13 @@
                 background-color: red;
                 color: white;
             }
+            .clearbutton {
+                padding: 1vmin;
+                margin: 1vmin;
+                font-size: x-large;
+                background-color: red;
+                color: white;
+            }
         </style>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
         <script>
@@ -391,6 +398,7 @@
             </div>
             <div id="notifs">
             </div>
+            <button class="clearbutton" onclick="document.getElementById('clrmodal').style.display='block'">Clear All</button>
         </div>
         <div id="searchcont">
             <div id="searchbar">
@@ -435,6 +443,16 @@
                     <input id="duein" type="datetime-local">
                 </form>
                 <button onclick="addassignment();" class="button" style="float: right; margin-top: 1vmin;">Add</button>
+            </div>
+        </div>
+        <div class="modal" id="clrmodal">
+            <div class="modal-content clearfix">
+                <span class="close" onclick="this.parentElement.parentElement.style.display = 'none';">&times;</span>
+                <blockquote>
+                    Are you sure you want to clear all notifications? This action can't be undone.
+                </blockquote>
+                <button class="delbutton" style="color: #333; background-color: #ddd;" onclick="this.parentElement.parentElement.style.display = 'none';">Let's not do that</button>
+                <button class="delbutton" onclick="curuser.notifications=[]; drawnotifs(); this.parentElement.parentElement.style.display = 'none';">Yes, I'm Sure.</button>
             </div>
         </div>
         <script>load();</script>
