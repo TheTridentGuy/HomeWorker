@@ -22,7 +22,7 @@
                 color: #ddd;
                 padding: 14px 16px;
                 text-decoration: none;
-                font-size: xx-large;
+                font-size: 30px;
                 display: block;
             }
             .topnav a.icon {
@@ -207,9 +207,9 @@
                 }
 
                 gethtml(n){
-                    var acthtml;
+                    var acthtml = "";
                     for(var act of this.actions){
-                        acthtml += `<span>[<a style="color: blue; text-decoration: underline; cursor: pointer;" onclick='${act[1]}'>${act[0]}</a>]</span>`
+                        acthtml += `<span>[<a style="color: blue; text-decoration: underline; cursor: pointer;" onclick='${act[1]}delnotif(${n});'>${act[0]}</a>]</span>`
                         return `
                             <div class="notif">
                                 <span class="closenotif" onclick="delnotif(${n});">&times;</span>
@@ -226,6 +226,7 @@
                 document.getElementById("searchcont").style.display = "none";
                 document.getElementById("notifcont").style.display = "none";
                 document.getElementById("assignmentcont").style.display = "block";
+                document.getElementById("duesooncont").style.display = "none";
                 toggleLinks();
             }
 
@@ -233,6 +234,7 @@
                 document.getElementById("searchcont").style.display = "none";
                 document.getElementById("assignmentcont").style.display = "none";
                 document.getElementById("notifcont").style.display = "block";
+                document.getElementById("duesooncont").style.display = "none";
                 toggleLinks();
             }
 
@@ -240,6 +242,15 @@
                 document.getElementById("notifcont").style.display = "none";
                 document.getElementById("assignmentcont").style.display = "none";
                 document.getElementById("searchcont").style.display = "block";
+                document.getElementById("duesooncont").style.display = "none";
+                toggleLinks();
+            }
+
+            function showduesoon(){
+                document.getElementById("notifcont").style.display = "none";
+                document.getElementById("assignmentcont").style.display = "none";
+                document.getElementById("searchcont").style.display = "none";
+                document.getElementById("duesooncont").style.display = "block";
                 toggleLinks();
             }
 
@@ -262,7 +273,7 @@
 
             function addassignobj(aobj){
                 var nobj = JSON.parse(unescape(aobj))
-                var nassign = new assignment(nobj.name, nobj.description, nobj.due);
+                var nassign = new assignment(nobj.name, nobj.description, new Date(nobj.due));
                 curuser.assignments.push(nassign);
                 drawassignments();
             }
@@ -273,7 +284,11 @@
                     var notif = curuser.notifications[i];
                     document.getElementById("notifs").innerHTML += notif.gethtml(i);
                 }
+                document.getElementById("notenum").style.display = "inline-block";
                 document.getElementById("notenum").innerHTML = curuser.notifications.length;
+                if(document.getElementById("notenum").innerHTML <= 0){
+                    document.getElementById("notenum").style.display = "none";
+                }
             }
 
             function delnotif(n){
@@ -338,6 +353,7 @@
 
                 curuser = new user();
 
+                document.getElementById("notenum").style.display = "none";
                 showassign();
                 toggleLinks();
             }
@@ -348,7 +364,7 @@
         <a onclick="showassign();" class="active">HomeWorker</a>
         <div id="links">
             <a onclick="showassign();"><i class="fa fa-file-text"></i> Assignments</a>
-            <a onclick=""><i class="fa fa-clock-o"></i> Due Soon</a>
+            <a onclick="showduesoon();"><i class="fa fa-clock-o"></i> Due Soon</a>
             <a onclick="shownotif();"><i class="fa fa-bell"></i> Notifications <span class="badge" id="notenum">0</span></a>
             <a onclick="showsearch();"><i class="fa fa-search"></i> Search</a>
         </div>
@@ -370,33 +386,10 @@
             ">Add Assignment</button>
         </div>
         <div id="notifcont">
-            <br>
-            <br>
+            <div class="header">
+                <span>Notifications:</span>
+            </div>
             <div id="notifs">
-                <div class="notif">
-                    <span class="closenotif" onclick="this.parentElement.style.display='none';">&times;</span>
-                    This is a notification.
-                </div> 
-                <div class="notif">
-                    <span class="closenotif" onclick="this.parentElement.style.display='none';">&times;</span>
-                    This is a notification.
-                </div> 
-                <div class="notif">
-                    <span class="closenotif" onclick="this.parentElement.style.display='none';">&times;</span>
-                    This is a notification.
-                </div> 
-                <div class="notif">
-                    <span class="closenotif" onclick="this.parentElement.style.display='none';">&times;</span>
-                    This is a notification.
-                </div> 
-                <div class="notif">
-                    <span class="closenotif" onclick="this.parentElement.style.display='none';">&times;</span>
-                    This is a notification.
-                </div> 
-                <div class="notif">
-                    <span class="closenotif" onclick="this.parentElement.style.display='none';">&times;</span>
-                    This is a notification.
-                </div> 
             </div>
         </div>
         <div id="searchcont">
@@ -410,6 +403,14 @@
                 <div class="content">
                     <h1>Filters...</h1>
                 </div>
+            </div>
+        </div>
+        <div id="duesooncont">
+            <div class="header">
+                <span>Due Soon:</span>
+            </div>
+            <div id="duesoon">
+
             </div>
         </div>
         <div id="namodal" class="modal">
