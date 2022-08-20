@@ -172,6 +172,13 @@
                 background-color: red;
                 color: white;
             }
+            .editbutton {
+                padding: 1vmin;
+                margin: 1vmin;
+                float: right;
+                background-color: #555;
+                color: white;
+            }
             .clearbutton {
                 padding: 1vmin;
                 margin: 1vmin;
@@ -186,6 +193,7 @@
                 constructor(){
                     this.assignments = [];
                     this.notifications = [];
+                    this.original;
                 }
             }
 
@@ -201,7 +209,7 @@
                     <button type="button" class="collapsible">${this.name}<span class="clearfix" style="float: right;">${this.due.toString()}</span></button>
                     <div class="content">
                         <p>${this.description}</p>
-                        <button class="button delbutton" onclick="delassignment(${n});">Delete Assignment</button>
+                        <button class="button delbutton" onclick="delassignment(${n});">Delete Assignment</button><button class="button editbutton" onclick="editassignment(${n});">Edit Assignment</button>
                     </div>
                     `
                 }
@@ -312,6 +320,30 @@
                 drawassignments();
             }
 
+            function editassignment(n){
+                var original = curuser.assignments.pop(n);
+                curuser.original = original;
+                original.due.setMinutes(original.due.getMinutes() - original.due.getTimezoneOffset());
+                document.getElementById('duee').value = original.due.toISOString().slice(0,16);
+                document.getElementById("emodal").style.display = "block";
+                document.getElementById("titlee").value = original.name;
+                document.getElementById("desce").value = original.description;
+            }
+
+            function finedit(){
+                nassign = new assignment(document.getElementById("titlee").value, document.getElementById("desce").value, new Date(document.getElementById('duee').value));
+                curuser.assignments.push(nassign);
+                document.getElementById("emodal").style.display = "none";
+                drawassignments();
+            }
+
+            function revert(){
+                nassign = new assignment(curuser.original.name, curuser.original.description, new Date(curuser.original.due));
+                curuser.assignments.push(nassign);
+                document.getElementById("emodal").style.display = "none";
+                drawassignments();
+            }
+
             function drawassignments(){
                 document.getElementById("assignments").innerHTML = "";
                 for(var i = 0; i<curuser.assignments.length; i++){
@@ -331,6 +363,16 @@
                         }
                     });
                 }
+            }
+
+            function namodal(){
+                document.getElementById('namodal').style.display='block';
+                var now = new Date();
+                now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+                document.getElementById('duein').value = now.toISOString().slice(0,16);
+                document.getElementById("titlein").value = "";
+                document.getElementById("descin").value = "";
+                document.getElementById("addin").innerHTML = "Add";
             }
 
             function load(){ 
@@ -368,10 +410,10 @@
     </head>
     <body>
         <div class="topnav">
-        <a onclick="showassign();" class="active">HomeWorker</a>
+        <a onclick="showassign(); toggleLinks();" class="active">HomeWorker</a>
         <div id="links">
             <a onclick="showassign();"><i class="fa fa-file-text"></i> Assignments</a>
-            <a onclick="showduesoon();"><i class="fa fa-clock-o"></i> Due Soon</a>
+            <a onclick="showduesoon();"><i class="fa fa-clock-o"></i> Due Soon <span class="badge" id="dsnum">0</span></a>
             <a onclick="shownotif();"><i class="fa fa-bell"></i> Notifications <span class="badge" id="notenum">0</span></a>
             <a onclick="showsearch();"><i class="fa fa-search"></i> Search</a>
         </div>
@@ -386,11 +428,7 @@
             <div id="assignments">
 
             </div>
-            <button class="addbut" onclick="document.getElementById('namodal').style.display='block';
-                                            var now = new Date();
-                                            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-                                            document.getElementById('duein').value = now.toISOString().slice(0,16);
-            ">Add Assignment</button>
+            <button class="addbut" onclick="namodal();">Add Assignment</button>
         </div>
         <div id="notifcont">
             <div class="header">
@@ -442,10 +480,34 @@
                     <br>
                     <input id="duein" type="datetime-local">
                 </form>
-                <button onclick="addassignment();" class="button" style="float: right; margin-top: 1vmin;">Add</button>
+                <button id="addin" onclick="addassignment();" class="button" style="float: right; margin-top: 1vmin;">Add</button>
             </div>
         </div>
-        <div class="modal" id="clrmodal">
+        <div id="emodal" class="modal">
+            <div class="modal-content clearfix">
+                <span class="title">Edit Assignment:</span>
+                <span class="close" onclick="revert();">&times;</span>
+                <br>
+                <br>
+                <form>
+                    <span>Title:</span>
+                    <br>
+                    <input id="titlee" type="text" placeholder="Title...">
+                    <br>
+                    <br>
+                    <span>Description:</span>
+                    <br>
+                    <textarea id="desce" placeholder="Description..."></textarea>
+                    <br>
+                    <br>
+                    <span>Due:</span>
+                    <br>
+                    <input id="duee" type="datetime-local">
+                </form>
+                <button id="addin" onclick="finedit();" class="button" style="float: right; margin-top: 1vmin;">Edit</button><button id="addin" onclick="revert();" class="button" style="float: right; margin-top: 1vmin;">Cancel</button>
+            </div>
+        </div>
+        <div id="clrmodal" class="modal">
             <div class="modal-content clearfix">
                 <span class="close" onclick="this.parentElement.parentElement.style.display = 'none';">&times;</span>
                 <blockquote>
