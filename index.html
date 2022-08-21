@@ -206,7 +206,7 @@
 
                 gethtml(n){
                     return `
-                    <button type="button" class="collapsible">${this.name}<span class="clearfix" style="float: right;">${this.due.toString()}</span></button>
+                    <button type="button" class="collapsible">${this.name}<span class="clearfix" style="float: right;">${this.due.toLocaleString()}</span></button>
                     <div class="content">
                         <p>${this.description}</p>
                         <button class="button delbutton" onclick="delassignment(${n});">Delete Assignment</button><button class="button editbutton" onclick="editassignment(${n});">Edit Assignment</button>
@@ -266,6 +266,7 @@
                 document.getElementById("assignmentcont").style.display = "none";
                 document.getElementById("searchcont").style.display = "none";
                 document.getElementById("duesooncont").style.display = "block";
+                loadduesoon();
                 toggleLinks();
             }
 
@@ -284,6 +285,7 @@
                 var namodal = document.getElementById("namodal");
                 namodal.style.display = "none";
                 drawassignments();
+                loadduesoon();
             }
 
             function addassignobj(aobj){
@@ -291,6 +293,7 @@
                 var nassign = new assignment(nobj.name, nobj.description, new Date(nobj.due));
                 curuser.assignments.push(nassign);
                 drawassignments();
+                loadduesoon();
             }
 
             function drawnotifs(){
@@ -307,27 +310,30 @@
             }
 
             function delnotif(n){
-                curuser.notifications.pop(n);
+                curuser.notifications.splice(n, 1);
                 drawnotifs();
             }
 
             function delassignment(n){
-                var del = curuser.assignments.pop(n);
-                console.log();
-                var note = new notification(`Assignment "${del.name}" deleted.`, [["Undo", `addassignobj("${escape(JSON.stringify(del))}");`]]);
+                var del = curuser.assignments[n];
+                curuser.assignments.splice(n, 1)
+                var note = new notification(`Assignment "${del.name}" deleted.`, [["undo", `addassignobj("${escape(JSON.stringify(del))}");`]]);
                 curuser.notifications.push(note);
                 drawnotifs();
                 drawassignments();
+                loadduesoon();
             }
 
             function editassignment(n){
-                var original = curuser.assignments.pop(n);
+                var original = curuser.assignments[n];
+                curuser.assignments.splice(n, 1)
                 curuser.original = original;
                 original.due.setMinutes(original.due.getMinutes() - original.due.getTimezoneOffset());
                 document.getElementById('duee').value = original.due.toISOString().slice(0,16);
                 document.getElementById("emodal").style.display = "block";
                 document.getElementById("titlee").value = original.name;
                 document.getElementById("desce").value = original.description;
+                drawassignments();
             }
 
             function finedit(){
@@ -335,6 +341,7 @@
                 curuser.assignments.push(nassign);
                 document.getElementById("emodal").style.display = "none";
                 drawassignments();
+                loadduesoon();
             }
 
             function revert(){
@@ -342,6 +349,7 @@
                 curuser.assignments.push(nassign);
                 document.getElementById("emodal").style.display = "none";
                 drawassignments();
+                loadduesoon();
             }
 
             function drawassignments(){
@@ -349,6 +357,36 @@
                 for(var i = 0; i<curuser.assignments.length; i++){
                     var assign = curuser.assignments[i];
                     document.getElementById("assignments").innerHTML += assign.gethtml(i);
+                }
+            }
+
+            function namodal(){
+                document.getElementById('namodal').style.display='block';
+                var now = new Date();
+                now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+                document.getElementById('duein').value = now.toISOString().slice(0,16);
+                document.getElementById("titlein").value = "";
+                document.getElementById("descin").value = "";
+                document.getElementById("addin").innerHTML = "Add";
+            }
+
+            function loadduesoon(){
+                var now = new Date();
+                now = addDays(2, now)
+                var duesoon = 0;
+                document.getElementById("duesoon").innerHTML = "";
+                for(var j=0; j<curuser.assignments.length; j++){
+                    var assign = curuser.assignments[j];
+                    if(assign.due < now){
+                        duesoon++;
+                        document.getElementById("duesoon").innerHTML += assign.gethtml(j);
+                    }
+                }
+                if(duesoon > 0){
+                    document.getElementById("dsnum").style.display = "inline-block";
+                    document.getElementById("dsnum").innerHTML = duesoon;
+                }else{
+                    document.getElementById("dsnum").style.display = "none";
                 }
 
                 var coll = document.getElementsByClassName("collapsible");
@@ -363,16 +401,13 @@
                         }
                     });
                 }
+                console.log("done!")
             }
 
-            function namodal(){
-                document.getElementById('namodal').style.display='block';
-                var now = new Date();
-                now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-                document.getElementById('duein').value = now.toISOString().slice(0,16);
-                document.getElementById("titlein").value = "";
-                document.getElementById("descin").value = "";
-                document.getElementById("addin").innerHTML = "Add";
+            function addDays(numOfDays, date=new Date()) {
+                rdate = new Date();
+                rdate.setTime(date.getTime() + numOfDays * 24 * 60 * 60 * 1000);
+                return rdate;
             }
 
             function load(){ 
