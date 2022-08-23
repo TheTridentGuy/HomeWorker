@@ -187,6 +187,11 @@
                 background-color: red;
                 color: white;
             }
+            .filler {
+                font-size: x-large;
+                padding: 2vmin 0vmin 2vmin 2vmin;
+                color: #555;
+            }
         </style>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
         <script>
@@ -203,14 +208,15 @@
                     this.name = name;
                     this.description = description;
                     this.due = due;
+                    this.done = false;
                 }
 
                 gethtml(n){
                     return `
-                    <button type="button" class="collapsible">${this.name}<span class="clearfix" style="float: right;">${this.due.toLocaleString()}</span></button>
+                    <button type="button" class="collapsible">${this.name} ${this.done?'(done)':''}<span class="clearfix" style="float: right;">${this.due.toLocaleString()}</span></button>
                     <div class="content">
                         <p>${this.description}</p>
-                        <button class="button delbutton" onclick="delassignment(${n});">Delete Assignment</button><button class="button editbutton" onclick="editassignment(${n});">Edit Assignment</button>
+                        <button class="button delbutton" onclick="delassignment(${n});">Delete Assignment</button><button class="button editbutton" onclick="editassignment(${n});">Edit Assignment</button><button class="button editbutton" onclick="toggledone(${n});">${this.done?'Mark As Undone':'Mark As Done'}</button>
                     </div>
                     `
                 }
@@ -239,6 +245,7 @@
             }
 
             function showassign(){
+                document.getElementById("donecont").style.display = "none";
                 document.getElementById("searchcont").style.display = "none";
                 document.getElementById("notifcont").style.display = "none";
                 document.getElementById("assignmentcont").style.display = "block";
@@ -247,6 +254,7 @@
             }
 
             function shownotif(){
+                document.getElementById("donecont").style.display = "none";
                 document.getElementById("searchcont").style.display = "none";
                 document.getElementById("assignmentcont").style.display = "none";
                 document.getElementById("notifcont").style.display = "block";
@@ -255,6 +263,7 @@
             }
 
             function showsearch(){
+                document.getElementById("donecont").style.display = "none";
                 document.getElementById("notifcont").style.display = "none";
                 document.getElementById("assignmentcont").style.display = "none";
                 document.getElementById("searchcont").style.display = "block";
@@ -263,11 +272,21 @@
             }
 
             function showduesoon(){
+                document.getElementById("donecont").style.display = "none";
                 document.getElementById("notifcont").style.display = "none";
                 document.getElementById("assignmentcont").style.display = "none";
                 document.getElementById("searchcont").style.display = "none";
                 document.getElementById("duesooncont").style.display = "block";
                 loadduesoon();
+                toggleLinks();
+            }
+
+            function showdone(){
+                document.getElementById("notifcont").style.display = "none";
+                document.getElementById("assignmentcont").style.display = "none";
+                document.getElementById("searchcont").style.display = "none";
+                document.getElementById("duesooncont").style.display = "none";
+                document.getElementById("donecont").style.display = "block";
                 toggleLinks();
             }
 
@@ -287,6 +306,7 @@
                 namodal.style.display = "none";
                 drawassignments();
                 loadduesoon();
+                loaddone();
             }
 
             function addassignobj(aobj){
@@ -295,6 +315,7 @@
                 curuser.assignments.push(nassign);
                 drawassignments();
                 loadduesoon();
+                loaddone();
             }
 
             function drawnotifs(){
@@ -318,11 +339,12 @@
             function delassignment(n){
                 var del = curuser.assignments[n];
                 curuser.assignments.splice(n, 1)
-                var note = new notification(`Assignment "${del.name}" deleted.`, [["undo", `addassignobj("${escape(JSON.stringify(del))}");`]]);
+                var note = new notification(`Assignment "${del.name}" ${del.done?'(done)':''} deleted.`, [["undo", `addassignobj("${escape(JSON.stringify(del))}");`]]);
                 curuser.notifications.push(note);
                 drawnotifs();
                 drawassignments();
                 loadduesoon();
+                loaddone();
             }
 
             function editassignment(n){
@@ -343,6 +365,7 @@
                 document.getElementById("emodal").style.display = "none";
                 drawassignments();
                 loadduesoon();
+                loaddone();
             }
 
             function revert(){
@@ -351,14 +374,24 @@
                 document.getElementById("emodal").style.display = "none";
                 drawassignments();
                 loadduesoon();
+                loaddone();
             }
 
             function drawassignments(){
                 document.getElementById("assignments").innerHTML = "";
                 for(var i = 0; i<curuser.assignments.length; i++){
                     var assign = curuser.assignments[i];
-                    document.getElementById("assignments").innerHTML += assign.gethtml(i);
+                    if(!assign.done){
+                        document.getElementById("assignments").innerHTML += assign.gethtml(i);
+                    }
                 }
+            }
+
+            function toggledone(n){
+                curuser.assignments[n].done = !curuser.assignments[n].done;
+                drawassignments();
+                loadduesoon();
+                loaddone();
             }
 
             function namodal(){
@@ -378,7 +411,7 @@
                 document.getElementById("duesoon").innerHTML = "";
                 for(var j=0; j<curuser.assignments.length; j++){
                     var assign = curuser.assignments[j];
-                    if(assign.due < now){
+                    if(assign.due < now & !assign.done){
                         duesoon++;
                         document.getElementById("duesoon").innerHTML += assign.gethtml(j);
                     }
@@ -388,6 +421,26 @@
                     document.getElementById("dsnum").innerHTML = duesoon;
                 }else{
                     document.getElementById("dsnum").style.display = "none";
+                }
+            }
+
+            function loaddone(){
+                var done = 0;
+                document.getElementById("done").innerHTML = "";
+                for(var j=0; j<curuser.assignments.length; j++){
+                    var assign = curuser.assignments[j];
+                    if(assign.done){
+                        done++;
+                        document.getElementById("done").innerHTML += assign.gethtml(j);
+                    }
+                }
+                if(done > 0){
+                    document.getElementById("donenum").style.display = "inline-block";
+                    document.getElementById("donenum").innerHTML = done;
+                    document.getElementById("isdone").style.display = "none";
+                }else{
+                    document.getElementById("donenum").style.display = "none";
+                    document.getElementById("isdone").style.display = "block";
                 }
 
                 var coll = document.getElementsByClassName("collapsible");
@@ -402,7 +455,6 @@
                         }
                     });
                 }
-                console.log("done!")
             }
 
             function addDays(numOfDays, date=new Date()) {
@@ -450,6 +502,7 @@
         <div id="links">
             <a onclick="showassign();"><i class="fa fa-file-text"></i> Assignments</a>
             <a onclick="showduesoon();"><i class="fa fa-clock-o"></i> Due Soon <span class="badge" id="dsnum">0</span></a>
+            <a onclick="showdone();"><i class="fa fa-check-circle-o"></i> Done <span class="badge" id="donenum">0</span></a>
             <a onclick="shownotif();"><i class="fa fa-bell"></i> Notifications <span class="badge" id="notenum">0</span></a>
             <a onclick="showsearch();"><i class="fa fa-search"></i> Search</a>
         </div>
@@ -504,6 +557,15 @@
                 </select>
             </div>
             <div id="duesoon">
+
+            </div>
+        </div>
+        <div id="donecont">
+            <div class="header">
+                <span>Done:</span>
+            </div>
+            <span class="filler" id="isdone">Nothing Done...</span>
+            <div id="done">
 
             </div>
         </div>
