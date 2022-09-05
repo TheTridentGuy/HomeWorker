@@ -447,7 +447,10 @@
                 document.getElementById("done").innerHTML = "";
                 for(var j=0; j<curuser.assignments.length; j++){
                     var assign = curuser.assignments[j];
+                    console.log(j, assign)
                     if(assign.done){
+                        console.log("it's done!")
+                        console.log(assign.gethtml(j))
                         done++;
                         document.getElementById("done").innerHTML += assign.gethtml(j);
                     }
@@ -469,17 +472,14 @@
                 var fitsdate = function(due) {
                     if(document.getElementById("bydue").checked){
                         if(new Date(document.getElementById("from").value)<due && due<new Date(document.getElementById("to").value)){
-                            console.log("true")
                             return true
                         }else{
-                            console.log("false")
                             return false
                         }
                     }else{
                         return true
                     }
                 }
-                document.getElementById("done").innerHTML = "";
                 for(var j=0; j<curuser.assignments.length; j++){
                     var assign = curuser.assignments[j];
                     if(document.querySelector('input[name="sc"]:checked').value.includes("a") && !assign.done && assign.getsearch().includes(searchterm) && fitsdate(assign.due)){
