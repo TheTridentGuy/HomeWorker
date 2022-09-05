@@ -228,7 +228,7 @@
 
                 gethtml(n){
                     return `
-                    <button type="button" class="collapsible">${this.name} ${this.done?'(done)':''}<span class="clearfix" style="float: right;">${this.due.toLocaleString()}</span></button>
+                    <button class="collapsible">${this.name} ${this.done?'(done)':''}<span class="clearfix" style="float: right;">${this.due.toLocaleString()}</span></button>
                     <div class="content">
                         <p>${this.description}</p>
                         <button class="button delbutton" onclick="delassignment(${n});">Delete Assignment</button><button class="button editbutton" onclick="editassignment(${n});">Edit Assignment</button><button class="button editbutton" onclick="toggledone(${n});">${this.done?'Mark As Undone':'Mark As Done'}</button>
@@ -447,10 +447,7 @@
                 document.getElementById("done").innerHTML = "";
                 for(var j=0; j<curuser.assignments.length; j++){
                     var assign = curuser.assignments[j];
-                    console.log(j, assign)
                     if(assign.done){
-                        console.log("it's done!")
-                        console.log(assign.gethtml(j))
                         done++;
                         document.getElementById("done").innerHTML += assign.gethtml(j);
                     }
@@ -468,6 +465,7 @@
                 var ndresults = [];
                 var dresults = [];
                 var results = 0;
+                this.reshtml = ""
                 var searchterm = document.getElementById("searchfield").value;
                 var fitsdate = function(due) {
                     if(document.getElementById("bydue").checked){
@@ -497,11 +495,18 @@
                 document.getElementById("resultnum").innerHTML = (dresults.length/1 + ndresults.length/1) + ` Results (${dresults.length} Done)`
                 document.getElementById("search").innerHTML = "";
                 for(var num of ndresults){
+                    this.reshtml += curuser.assignments[num].gethtml(num);
                     document.getElementById("search").innerHTML += curuser.assignments[num].gethtml(num);
                 }
                 if(dresults.length > 0) document.getElementById("search").innerHTML += "<br><br><span class='filler'>Done List:</span><br><br>";
                 for(var num of dresults){
+                    this.reshtml += curuser.assignments[num].gethtml(num);
                     document.getElementById("search").innerHTML += curuser.assignments[num].gethtml(num);
+                }
+                if((dresults.length + ndresults.length) > 0){
+                    document.getElementById("printres").style.display = "block";
+                }else{
+                    document.getElementById("printres").style.display = "none";
                 }
 
                 /* Update Collapsibles: */
@@ -519,6 +524,54 @@
                         });
                     }
                 }
+            }
+
+            function printresults(){
+                newwin = window.open("", "", "width=500,height=600");
+                newwin.document.write(
+                    `
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Print Search Results</title>
+        <style>
+            * {
+                font-family: sans-serif;
+            }
+            .button {
+                display: none;
+            }
+            .content {
+                font-weight: bold;
+                padding: 5px 18px;
+                color: black;
+                border: 2px solid black;
+                overflow: hidden;
+                background-color: transparent;
+                width: auto;
+                margin-bottom: 5px;
+            }
+            .collapsible {
+                margin-top: 5px;
+                background-color: transparent;
+                color: black;
+                cursor: pointer;
+                padding: 18px;
+                width: 100%;
+                border: 2px solid black;
+                text-align: left;
+                outline: none;
+                font-size: 15px;
+            }
+        </style>
+    </head>
+    <body>
+        ${this.reshtml}
+        <button style="font-size: 5vmin; margin-top: 5vmin; padding: 2vmin; width: 25%;" onclick="this.style.display='none'; print();">Print</button>
+    </body>
+</html>
+                    `
+                ) 
             }
 
             function addDays(numOfDays, date=new Date()) {
@@ -640,6 +693,7 @@
                 <div id="search">
 
                 </div>
+                <button id="printres" class="button" style="background-color: #777; color: #ddd; margin-top: 2vmin;" onclick="printresults();">Print Search Results</button>
             </div>
         </div>
         <div id="duesooncont">
