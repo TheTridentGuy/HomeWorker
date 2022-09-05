@@ -1,3 +1,3 @@
 # HomeWorker
-Web-based homework tracker. Work-in-progress(WIP).
+Web-based homework tracker. Alpha Release.
 https://thetridentguy.github.io/HomeWorker/

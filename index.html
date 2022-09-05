@@ -275,7 +275,6 @@
                 document.getElementById("assignmentcont").style.display = "none";
                 document.getElementById("notifcont").style.display = "block";
                 document.getElementById("duesooncont").style.display = "none";
-                drawnotifs();
                 drawall();
                 toggleLinks();
             }
@@ -334,29 +333,9 @@
                 drawall();
             }
 
-            function drawnotifs(){
-                document.getElementById("notifs").innerHTML = "";
-                for(var i = 0; i<curuser.notifications.length; i++){
-                    var notif = curuser.notifications[i];
-                    document.getElementById("notifs").innerHTML += notif.gethtml(i);
-                }
-                document.getElementById("notenum").style.display = "inline-block";
-                document.getElementById("notenum").innerHTML = curuser.notifications.length;
-                if(document.getElementById("notenum").innerHTML <= 0){
-                    document.getElementById("notenum").style.display = "none";
-                }
-                if(curuser.notifications.length == 0){
-                    document.getElementById("isnotif").style.display = "block";
-                    document.getElementById("clrbut").style.display = "none";
-                }else{
-                    document.getElementById("clrbut").style.display = "block";
-                    document.getElementById("isnotif").style.display = "none";
-                }
-            }
-
             function delnotif(n){
                 curuser.notifications.splice(n, 1);
-                drawnotifs();
+                drawall();
             }
 
             function delassignment(n){
@@ -364,7 +343,6 @@
                 curuser.assignments.splice(n, 1)
                 var note = new notification(`Assignment "${del.name}" ${del.done?'(done)':''} deleted.`, [["undo", `addassignobj("${escape(JSON.stringify(del))}");`]]);
                 curuser.notifications.push(note);
-                drawnotifs();
                 drawall();
             }
 
@@ -417,6 +395,25 @@
                     if(!assign.done){
                         document.getElementById("assignments").innerHTML += assign.gethtml(i);
                     }
+                }
+
+                /* Draw Notifications: */
+                document.getElementById("notifs").innerHTML = "";
+                for(var i = 0; i<curuser.notifications.length; i++){
+                    var notif = curuser.notifications[i];
+                    document.getElementById("notifs").innerHTML += notif.gethtml(i);
+                }
+                document.getElementById("notenum").style.display = "inline-block";
+                document.getElementById("notenum").innerHTML = curuser.notifications.length;
+                if(document.getElementById("notenum").innerHTML <= 0){
+                    document.getElementById("notenum").style.display = "none";
+                }
+                if(curuser.notifications.length == 0){
+                    document.getElementById("isnotif").style.display = "block";
+                    document.getElementById("clrbut").style.display = "none";
+                }else{
+                    document.getElementById("clrbut").style.display = "block";
+                    document.getElementById("isnotif").style.display = "none";
                 }
 
                 /* Draw Due Soon: */
@@ -509,6 +506,9 @@
                     document.getElementById("printres").style.display = "none";
                 }
 
+                /* Update Local Storage: */
+                localStorage.setItem("user", JSON.stringify(curuser));
+
                 /* Update Collapsibles: */
                 var coll = document.getElementsByClassName("collapsible");
                 for (var i = 0; i < coll.length; i++) {
@@ -522,6 +522,24 @@
                                 content.style.display = "block";
                             }
                         });
+                    }
+                }
+            }
+
+            function loadfromstorage(){
+                var suser = localStorage.getItem("user");
+                if(suser!=null){ // !=null added for clarity
+                    suser = JSON.parse(suser);
+                    curuser.assignments = suser.assignments;
+                    curuser.notifications = suser.notifications;
+                    for(var i=0; i<curuser.assignments.length; i++){
+                        var newass = new assignment(curuser.assignments[i].name, curuser.assignments[i].description, new Date(curuser.assignments[i].due));
+                        newass.done = curuser.assignments[i].done;
+                        curuser.assignments[i]=newass;
+                    }
+                    for(var j=0; j<curuser.notifications.length; j++){
+                        var newnot = new notification(curuser.notifications[j].data, curuser.notifications[j].actions);
+                        curuser.notifications[j]=newnot;
                     }
                 }
             }
@@ -606,6 +624,7 @@
                 }
 
                 curuser = new user();
+                loadfromstorage();
 
                 document.getElementById("notenum").style.display = "none";
                 showassign();
@@ -781,7 +800,7 @@
                     Are you sure you want to clear all notifications? This action can't be undone.
                 </blockquote>
                 <button class="delbutton" style="color: #333; background-color: #ddd;" onclick="this.parentElement.parentElement.style.display = 'none';">Let's not do that</button>
-                <button class="delbutton" onclick="curuser.notifications=[]; drawnotifs(); this.parentElement.parentElement.style.display = 'none';">Yes, I'm Sure.</button>
+                <button class="delbutton" onclick="curuser.notifications=[]; drawall(); this.parentElement.parentElement.style.display = 'none';">Yes, I'm Sure.</button>
             </div>
         </div>
         <script>load();</script>
