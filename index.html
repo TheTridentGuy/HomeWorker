@@ -509,6 +509,9 @@
                 /* Update Local Storage: */
                 localStorage.setItem("user", JSON.stringify(curuser));
 
+                /* Check For Overdue Work: */
+                // TODO: make this work!
+
                 /* Update Collapsibles: */
                 var coll = document.getElementsByClassName("collapsible");
                 for (var i = 0; i < coll.length; i++) {
@@ -719,7 +722,7 @@
             <div class="header">
                 <span>Due Soon:</span>
                 <br>
-                <select id="list" onchange="loadduesoon();">
+                <select id="list" onchange="drawall();">
                     <option value="1">1 Day List</option>
                     <option value="2" selected>2 Day List</option>
                     <option value="3">3 Day List</option>
