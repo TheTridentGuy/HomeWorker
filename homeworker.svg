@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="512"
+   height="512"
+   viewBox="0 0 135.46667 135.46667"
+   version="1.1"
+   id="svg5"
+   inkscape:version="1.1 (c4e8f9e, 2021-05-24)"
+   sodipodi:docname="homeworker.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#">
+  <sodipodi:namedview
+     id="namedview7"
+     pagecolor="#393939"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="0"
+     inkscape:document-units="px"
+     showgrid="false"
+     inkscape:zoom="0.98046875"
+     inkscape:cx="256.50996"
+     inkscape:cy="256"
+     inkscape:window-width="1280"
+     inkscape:window-height="730"
+     inkscape:window-x="13"
+     inkscape:window-y="37"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="layer1"
+     gridtolerance="10">
+    <inkscape:grid
+       type="xygrid"
+       id="grid808" />
+  </sodipodi:namedview>
+  <defs
+     id="defs2">
+    <inkscape:path-effect
+       effect="fillet_chamfer"
+       id="path-effect3432"
+       is_visible="true"
+       lpeversion="1"
+       satellites_param="F,1,0,1,0,0.25,0,1 @ F,1,0,1,0,0.25,0,1 @ F,1,0,1,0,0.25,0,1 @ F,1,0,1,0,0.25,0,1"
+       unit="px"
+       method="auto"
+       mode="F"
+       radius="25"
+       chamfer_steps="1"
+       flexible="true"
+       use_knot_distance="true"
+       apply_no_radius="true"
+       apply_with_radius="true"
+       only_selected="false"
+       hide_knots="false" />
+  </defs>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <path
+       style="fill:#ffffff;stroke-width:3.48566;stroke-linecap:round;stroke-linejoin:round;paint-order:markers fill stroke"
+       id="rect931"
+       width="135.46667"
+       height="135.46667"
+       x="0"
+       y="0"
+       inkscape:path-effect="#path-effect3432"
+       d="m 33.866669,0 h 67.733341 a 33.866669,33.866669 45 0 1 33.86666,33.866669 v 67.733341 a 33.866669,33.866669 135 0 1 -33.86666,33.86666 H 33.866669 A 33.866669,33.866669 45 0 1 0,101.60001 V 33.866669 A 33.866669,33.866669 135 0 1 33.866669,0 Z"
+       sodipodi:type="rect" />
+    <path
+       d="m 26.782978,26.783002 c 0,-7.539553 6.110561,-13.650111 13.650118,-13.650111 h 35.298353 c 3.625814,0 7.080998,1.438167 9.640397,3.999055 l 19.323444,19.312775 c 2.5594,2.559396 3.9884,6.01458 3.9884,9.640391 v 62.598558 c 0,7.52889 -6.12123,13.65011 -13.650123,13.65011 H 40.433096 c -7.539557,0 -13.650118,-6.12122 -13.650118,-13.65011 z M 98.446102,108.68367 V 47.258169 H 81.38345 c -3.77511,0 -6.825058,-3.049947 -6.825058,-6.825056 V 23.370474 H 40.433096 c -1.885424,0 -3.412529,1.527107 -3.412529,3.412528 v 81.900668 c 0,1.87689 1.527105,3.41253 3.412529,3.41253 h 54.600471 c 1.876897,0 3.412535,-1.53564 3.412535,-3.41253 z"
+       id="path825"
+       style="stroke-width:0.213283" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:28.2222px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke-width:1.43601"
+       x="42.425663"
+       y="87.419632"
+       id="text1891"><tspan
+         sodipodi:role="line"
+         id="tspan1889"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:28.2222px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke-width:1.43601"
+         x="42.425663"
+         y="87.419632">HW</tspan></text>
+  </g>
+  <metadata
+     id="metadata29">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <cc:license
+           rdf:resource="http://creativecommons.org/licenses/by-nc-nd/4.0/" />
+      </cc:Work>
+      <cc:License
+         rdf:about="http://creativecommons.org/licenses/by-nc-nd/4.0/">
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#Reproduction" />
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#Distribution" />
+        <cc:requires
+           rdf:resource="http://creativecommons.org/ns#Notice" />
+        <cc:requires
+           rdf:resource="http://creativecommons.org/ns#Attribution" />
+        <cc:prohibits
+           rdf:resource="http://creativecommons.org/ns#CommercialUse" />
+      </cc:License>
+    </rdf:RDF>
+  </metadata>
+</svg>

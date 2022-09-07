@@ -1,8 +1,14 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <meta charset="utf-8"> <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <meta name="theme-color" content="#555">
+        <meta name="apple-mobile-web-app-status-bar" content="#555">
+        <link rel="shortcut icon" href="favicon.ico">
+        <link rel="icon" type="image/png" href="homeworker.png" sizes="512x512">
+        <link rel="apple-touch-icon" sizes="512x512" href="homeworker.png"> 
         <title>HomeWorker</title>
         <style>
             * {
@@ -205,6 +211,7 @@
                 margin: 2vmin;
             }
         </style>
+        <script src="confetti.js"></script>
         <script>
             class user{
                 constructor(){
@@ -387,7 +394,20 @@
                 document.getElementById("addin").innerHTML = "Add";
             }
 
+            function compare(a, b) {
+                if(a.due < b.due){
+                    return -1;
+                }
+                if(a.due > b.due){
+                    return 1;
+                }
+                return 0;
+            }
+
             function drawall(){
+                /* Sort By Due Date: */
+                curuser.assignments.sort(compare);
+
                 /* Draw Assignments: */
                 document.getElementById("assignments").innerHTML = "";
                 for(var i = 0; i<curuser.assignments.length; i++){
@@ -563,26 +583,28 @@
                 display: none;
             }
             .content {
-                font-weight: bold;
-                padding: 5px 18px;
+                padding: 2px 5px;
                 color: black;
                 border: 2px solid black;
                 overflow: hidden;
                 background-color: transparent;
                 width: auto;
-                margin-bottom: 5px;
+                margin-bottom: 2px;
             }
             .collapsible {
-                margin-top: 5px;
+                font-weight: bold;
                 background-color: transparent;
                 color: black;
                 cursor: pointer;
-                padding: 18px;
+                padding: 5px;
                 width: 100%;
                 border: 2px solid black;
                 text-align: left;
                 outline: none;
                 font-size: 15px;
+            }
+            p {
+                margin: none;
             }
         </style>
     </head>
